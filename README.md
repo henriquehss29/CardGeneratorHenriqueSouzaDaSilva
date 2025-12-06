@@ -21,6 +21,6 @@ Este projeto foi desenvolvido como trabalho prático da disciplina de Programaç
 3. Escolha a bandeira e digite o nome
 4. Clique em "Gerar Cartão"
 
-## 🧮 Algoritmo de Luhn
+## 🧮 Algoritmo de Luhn para Cartões
 
 O projeto implementa corretamente o algoritmo de Luhn para validação de cartões de crédito, garantindo que todos os números gerados sejam válidos.
