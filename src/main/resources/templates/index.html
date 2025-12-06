@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Card Generator</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #007bff; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; background: #e8f5e8; border-radius: 5px; display: none; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Card Generator</h1>
+        
+        <form id="cardForm">
+            <div class="form-group">
+                <label>Bandeira:</label>
+                <select id="bandeira" required>
+                    <option value="VISA">Visa</option>
+                    <option value="MASTERCARD">Mastercard</option>
+                    <option value="AMEX">American Express</option>
+                    <option value="ELO">Elo</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Nome do Titular:</label>
+                <input type="text" id="nome" required placeholder="Digite seu nome">
+            </div>
+            
+
+            
+            <button type="submit">🎯 Gerar Cartão</button>
+        </form>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('cardForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                bandeira: document.getElementById('bandeira').value,
+                nome: document.getElementById('nome').value
+            };
+            
+            try {
+                const response = await fetch('/api/simple/gerar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+                
+                if (response.ok) {
+                    resultDiv.className = 'result';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Cartão Gerado com Sucesso!</h3>
+                        <p><strong>Número:</strong> ${result.numero}</p>
+                        <p><strong>Bandeira:</strong> ${result.bandeira}</p>
+                        <p><strong>Titular:</strong> ${result.titular}</p>
+                        <p><strong>CVV:</strong> ${result.cvv}</p>
+                        <p><strong>Validade:</strong> ${result.validade}</p>
+                        <p><strong>Válido (Luhn):</strong> ${result.valido ? '✓ Sim' : '❌ Não'}</p>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<h3>❌ Erro:</h3><p>${result.erro}</p>`;
+                }
+                
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<h3>❌ Erro de conexão</h3><p>Verifique se o servidor está rodando.</p>`;
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
